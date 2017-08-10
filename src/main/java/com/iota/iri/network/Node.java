@@ -44,12 +44,12 @@ public class Node {
     private static final Logger log = LoggerFactory.getLogger(Node.class);
 
 
-    public  static final int TRANSACTION_PACKET_SIZE = 1650;
+    public  static final int TRANSACTION_PACKET_SIZE = 1653;
     private static final int QUEUE_SIZE = 1000;
     private static final int RECV_QUEUE_SIZE = 1000;
     private static final int REPLY_QUEUE_SIZE = 1000;
     private static final int PAUSE_BETWEEN_TRANSACTIONS = 1;
-    public  static final int REQUEST_HASH_SIZE = 46;
+    public  static final int REQUEST_HASH_SIZE = 49;
     private static double P_SELECT_MILESTONE;
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
@@ -152,7 +152,7 @@ public class Node {
     }
 
     private final Map<String, String> neighborIpCache = new HashMap<>();
-    
+
     private Runnable spawnNeighborDNSRefresherThread() {
         return () -> {
 
@@ -212,24 +212,24 @@ public class Node {
     }
 
     private Optional<String> checkIp(final String dnsName) {
-        
+
         if (StringUtils.isEmpty(dnsName)) {
             return Optional.empty();
         }
-        
+
         InetAddress inetAddress;
         try {
             inetAddress = java.net.InetAddress.getByName(dnsName);
         } catch (UnknownHostException e) {
             return Optional.empty();
         }
-        
+
         final String hostAddress = inetAddress.getHostAddress();
-        
+
         if (StringUtils.equals(dnsName, hostAddress)) { // not a DNS...
             return Optional.empty();
         }
-        
+
         return Optional.of(hostAddress);
     }
     public void preProcessReceivedData(byte[] receivedData, SocketAddress senderAddress, String uriScheme) {
@@ -255,7 +255,7 @@ public class Node {
                     MessageDigest digest = MessageDigest.getInstance("SHA-256");
                     digest.update(receivedData, 0, TransactionViewModel.SIZE);
                     ByteBuffer byteHash = ByteBuffer.wrap(digest.digest());
-                    
+
                     //check if cached
                     synchronized (recentSeenBytes) {
                         receivedTransactionHash = recentSeenBytes.get(byteHash);
@@ -286,7 +286,7 @@ public class Node {
                         recentSeenBytesMissCount.set(0L);
                         recentSeenBytesHitCount.set(0L);
                     }
-                    
+
                 } catch (NoSuchAlgorithmException e) {
                     log.error("MessageDigest: "+e);
                 } catch (final RuntimeException e) {
@@ -334,7 +334,7 @@ public class Node {
                     log.error("Invalid URI string: " + uriString);
                 }
             }
-            else {                
+            else {
                 if ( rejectedAddresses.size() > 20 ) {
                     // Avoid ever growing list in case of an attack.
                     rejectedAddresses.clear();
@@ -697,7 +697,7 @@ public class Node {
         }
         return neighbor;
     }
-    
+
     public static Optional<URI> uri(final String uri) {
         try {
             return Optional.of(new URI(uri));
